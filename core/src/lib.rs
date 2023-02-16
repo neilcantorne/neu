@@ -7,6 +7,7 @@ mod layer_trainables;
 mod kernel;
 mod op_builder;
 
+pub mod layers;
 pub use engine::Engine;
 pub use op_builder::OpBuilder;
 pub use layer::Layer;
