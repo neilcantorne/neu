@@ -11,13 +11,18 @@ pub enum OpNode {
 }
 
 pub enum Operand {
-    Tensor2(u32, u32, NType),
-    Tensor3(u32, u32, u32, NType),
-    Scalar(NType),
+    Tensor2(u32, u32, ValueType),
+    Tensor3(u32, u32, u32, ValueType),
+    Scalar(ValueType),
     Node(Box<OpNode>)
 }
 
-pub enum NType {
+pub struct RefValue {
+    dimension: crate::Dimension,
+    type_: ValueType,
+}
+
+pub enum ValueType {
     F32,
     F64,
     U8,
