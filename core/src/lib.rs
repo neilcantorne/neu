@@ -6,6 +6,7 @@ mod layer_output;
 mod layer_trainables;
 mod kernel;
 mod op_builder;
+mod dimension;
 
 pub mod layers;
 pub use engine::Engine;
@@ -15,3 +16,4 @@ pub use layer_input::LayerInput;
 pub use layer_output::LayerOutput;
 pub use layer_trainables::LayerTrainables;
 pub use kernel::Kernel;
+pub use dimension::Dimension;
