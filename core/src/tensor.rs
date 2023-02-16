@@ -70,3 +70,11 @@ impl<F: crate::Element + Copy> Tensor<F> {
         Ok(Self { buffer, dimension })
     }
 }
+
+impl<F: crate::Element + Copy> crate::LayerInput for Tensor<F> {
+    type Element = F;
+
+    fn dimension(&self) -> crate::Dimension {
+        self.dimension
+    }
+}
