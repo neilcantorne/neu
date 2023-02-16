@@ -1,4 +1,5 @@
 pub struct Graph {
+    pub(super) name: String,
     pub(super) root: Option<Node>
 }
 
@@ -37,4 +38,9 @@ pub enum ScalarType {
 pub struct Element {
     pub(super) channels: usize,
     pub(super) type_: ScalarType,
+}
+
+pub struct ParamRef {
+    nth: u32,
+    type_: GeneralType,
 }
