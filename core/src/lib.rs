@@ -7,7 +7,11 @@ mod layer_trainables;
 mod kernel;
 mod op_builder;
 mod dimension;
+mod error;
 
+use error::ErrorVariants as Errors;
+pub use error::Error;
+pub use error::Result;
 pub mod layers;
 pub use engine::Engine;
 pub use op_builder::OpBuilder;
