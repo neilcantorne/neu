@@ -22,3 +22,4 @@ pub use layer_output::LayerOutput;
 pub use layer_trainables::LayerTrainables;
 pub use kernel::Kernel;
 pub use dimension::Dimension;
+pub use tensor::Tensor;
