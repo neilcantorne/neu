@@ -71,7 +71,7 @@ impl<F: crate::Element + Copy> Tensor<F> {
     }
 }
 
-impl<F: crate::Element + Copy> crate::LayerInput for Tensor<F> {
+impl<F: crate::Element + Copy> crate::LayerValue for Tensor<F> {
     type Element = F;
 
     fn dimension(&self) -> crate::Dimension {
