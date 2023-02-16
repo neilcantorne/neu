@@ -11,15 +11,17 @@ pub enum Node {
 }
 
 pub enum Operand {
-    Tensor2(u32, u32, ValueType),
-    Tensor3(u32, u32, u32, ValueType),
-    Scalar(ValueType),
+    Parameter(u32, GeneralType),
     Node(Box<Node>)
 }
 
+pub enum GeneralType {
+    Tensor2(u32, u32, Element),
+    Tensor3(u32, u32, u32, Element),
+    Scalar(ScalarType),
+}
 
-
-pub enum ValueType {
+pub enum ScalarType {
     F32,
     F64,
     U8,
@@ -30,4 +32,9 @@ pub enum ValueType {
     I16,
     I32,
     I64
+}
+
+pub struct Element {
+    pub(super) channels: usize,
+    pub(super) type_: ScalarType,
 }
