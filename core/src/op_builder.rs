@@ -1,7 +1,9 @@
-pub struct OpBuilder {
-    
+use std::marker::PhantomData;
+
+pub struct OpBuilder<I: crate::LayerInput> {
+    _input: PhantomData<I>
 }
 
-impl OpBuilder {
+impl<I: crate::LayerInput> OpBuilder<I> {
 
 }
