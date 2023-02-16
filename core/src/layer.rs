@@ -6,5 +6,5 @@ pub trait Layer where
     type Output;
     type Trainables;
 
-    fn generate_kernel(&self, input: &Self::Input, builder: crate::OpBuilder) -> crate::Kernel<Self::Input, Self::Output, Self::Trainables>;
+    fn generate_kernel(&self, input: crate::RefValue) -> crate::Kernel<Self::Input, Self::Output, Self::Trainables>;
 }
