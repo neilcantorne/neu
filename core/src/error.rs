@@ -2,7 +2,8 @@ pub struct Error(ErrorVariants);
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub(crate) enum ErrorVariants {
-
+    InvalidTensorLayout,
+    TensorAllocationFailed
 }
 
 impl<T> From<ErrorVariants> for Result<T> {
