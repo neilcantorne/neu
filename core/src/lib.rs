@@ -5,6 +5,7 @@ mod layer_input;
 mod layer_output;
 mod layer_trainables;
 mod kernel;
+mod tensor;
 mod op_builder;
 mod dimension;
 mod error;
