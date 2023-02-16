@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 ndarray = "0.15.6"
+inkwell = { git = "https://github.com/TheDan64/inkwell", branch = "master", features = ["llvm15-0"] }
