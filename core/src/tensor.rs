@@ -1,12 +1,12 @@
 use std::ptr::NonNull;
 use crate::Errors;
 
-pub struct Tensor<F,> {
+pub struct Tensor<F: crate::Element> {
     buffer: NonNull<F>,
     dimension: crate::Dimension,
 }
 
-impl<F: Copy> Tensor<F> {
+impl<F: crate::Element + Copy> Tensor<F> {
     unsafe fn allocate(dimension: &crate::Dimension) -> crate::Result<NonNull<F>> {
         use std::alloc::*;
 
@@ -50,13 +50,14 @@ impl<F: Copy> Tensor<F> {
             buffer = Self::allocate(&dimension)?;
             let ptr = buffer.as_ptr();
             
-            let w1x2 = dimension.1 * dimension.2;
+            let w1x2 = dimension.1 as isize * dimension.2 as isize;
 
             for i2 in 0..dimension.2 {
                 for i1 in 0..dimension.1 {
                     for i0 in 0..dimension.0 {
-                        let index: isize = i0 as _ + i1 as _ * dimension.0
-                            + i2 as _ * w1x2;
+                        let index = i0 as isize
+                            + i1 as isize * dimension.0 as isize
+                            + i2 as isize * w1x2;
 
                         let value = (generator)(crate::Dimension(i0, i1, i2));
 
