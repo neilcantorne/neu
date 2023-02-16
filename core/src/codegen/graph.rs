@@ -17,10 +17,7 @@ pub enum Operand {
     Node(Box<Node>)
 }
 
-pub struct RefValue {
-    dimension: crate::Dimension,
-    type_: ValueType,
-}
+
 
 pub enum ValueType {
     F32,

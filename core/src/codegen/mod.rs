@@ -1,3 +1,5 @@
 mod graph;
+mod ref_value;
 
-pub use graph::RefValue;
+use graph::ValueType;
+pub use ref_value::RefValue;
