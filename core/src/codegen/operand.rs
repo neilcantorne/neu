@@ -15,7 +15,3 @@ impl Operand {
         }
     }
 }
-
-pub trait IntoOperand {
-    fn operand(&self) -> Operand;
-}

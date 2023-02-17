@@ -12,7 +12,4 @@ use scalar_type::ScalarType;
 use node::Node;
 use element_type::ElementType;
 use constant::Constant;
-use operand::{
-    IntoOperand,
-    Operand
-};
+use operand::Operand;

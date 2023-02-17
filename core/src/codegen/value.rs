@@ -2,8 +2,10 @@ pub struct Value {
     pub(super) operand: super::Operand,
 }
 
-impl super::IntoOperand for Value {
-    fn operand(&self) -> super::operand::Operand {
-        return self.operand;
+#[allow(clippy::from_over_into)]
+impl Into<super::Operand> for Value {
+    #[inline(always)]
+    fn into(self) -> super::Operand {
+        self.operand
     }
 }
