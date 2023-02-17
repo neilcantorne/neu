@@ -1,12 +1,15 @@
 use std::ptr::NonNull;
+
 use crate::Errors;
 
-pub struct Tensor<F: crate::Element> {
+pub struct Tensor<F> {
     buffer: NonNull<F>,
     dimension: crate::Dimension,
+    channels: usize,
 }
 
-impl<F: crate::Element + Copy> Tensor<F> {
+impl<F: Copy> Tensor<F> {
+
     unsafe fn allocate(dimension: &crate::Dimension) -> crate::Result<NonNull<F>> {
         use std::alloc::*;
 
@@ -21,11 +24,11 @@ impl<F: crate::Element + Copy> Tensor<F> {
             .or(Errors::InvalidTensorLayout.into())?
         };
 
-        NonNull::new(alloc(layout) as *mut F)
+        NonNull::new(alloc(layout) as _)
             .ok_or(std::convert::Into::<crate::Error>::into(Errors::TensorAllocationFailed))
     }
 
-    pub fn with_value(value: F, dimension: crate::Dimension) -> crate::Result<Self> {
+    pub fn with_value(value: impl TryInto<F, Error = crate::Error> + crate::ChannelCount + Copy, dimension: crate::Dimension) -> crate::Result<Self> {
         let buffer;
 
         unsafe {
@@ -35,16 +38,22 @@ impl<F: crate::Element + Copy> Tensor<F> {
             let end = current.offset(dimension.0 as isize * dimension.1 as isize * dimension.2 as isize);
 
             while current < end {
-                current.write(value);
+                current.write(value.try_into()?);
                 current = current.add(1);
             }
         }
 
-        Ok(Self { buffer, dimension })
+        Ok(Self {
+            buffer,
+            dimension,
+            channels: value.channels(),
+        })
     }
 
-    pub fn with_value_from_fn(generator: impl Fn(crate::Dimension) -> F, dimension: crate::Dimension) -> crate::Result<Self> {
+    pub fn with_value_from_fn<T>(generator: impl Fn(crate::Dimension) -> T, dimension: crate::Dimension) -> crate::Result<Self>
+        where T: TryInto<F, Error = crate::Error> + crate::ChannelCount {
         let buffer;
+        let mut channels = None;
 
         unsafe {
             buffer = Self::allocate(&dimension)?;
@@ -61,20 +70,53 @@ impl<F: crate::Element + Copy> Tensor<F> {
 
                         let value = (generator)(crate::Dimension(i0, i1, i2));
 
-                        ptr.offset(index).write(value);
+                        if let Some(channels) = channels {
+                            if channels != value.channels() {
+                                return Errors::TensorNonUniformChannel.into();
+                            }
+                        } else {
+                            channels = Some(value.channels())
+                        }
+
+                        ptr.offset(index).write(value.try_into()?);
                     }
                 }
             }
         }
 
-        Ok(Self { buffer, dimension })
+        Ok(Self {
+            buffer,
+            dimension,
+            channels: channels.unwrap()
+        })
+    }
+
+    pub fn dimension(&self) -> &crate::Dimension {
+        &self.dimension
+    }
+
+    pub fn channels(&self) -> usize {
+        self.channels
     }
 }
 
-impl<F: crate::Element + Copy> crate::LayerValue for Tensor<F> {
-    type Element = F;
+impl<F: PartialEq> PartialEq for Tensor<F> {
+    fn eq(&self, other: &Self) -> bool {
+        let mut a = self.buffer;
+        let mut b = other.buffer;
+        let end = unsafe { self.buffer.as_ptr().add(self.channels) };
 
-    fn dimension(&self) -> crate::Dimension {
-        self.dimension
+        while a.as_ptr() < end {
+            unsafe {
+                if F::ne(a.as_ref(), b.as_ref()) {
+                    return false;
+                }
+            }
+
+            a = unsafe { NonNull::new_unchecked( a.as_ptr().add(1)) };
+            b = unsafe { NonNull::new_unchecked( b.as_ptr().add(1)) };
+        }
+
+        true
     }
 }
