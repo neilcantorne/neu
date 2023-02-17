@@ -66,236 +66,76 @@ impl Constant {
                 => super::GeneralType::Element(
                     super::ElementType(element.channels() as _,
                     super::ScalarType::U64)),
-            Constant::TensorF32(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
+            Constant::TensorF32(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F32))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
+                        super::ScalarType::F32)),
+            Constant::TensorF64(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F32))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
+                        super::ScalarType::F64)),
+            Constant::TensorU8(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F32))
-                }
-            },
-            Constant::TensorF64(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
+                        super::ScalarType::U8)),
+            Constant::TensorU16(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F64))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
+                        super::ScalarType::U16)),
+            Constant::TensorU32(tensor) 
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F64))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
+                        super::ScalarType::U32)),
+            Constant::TensorU64(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::F64))
-                }
-            },
-            Constant::TensorU8(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
+                        super::ScalarType::U64)),
+            Constant::TensorI8(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U8))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
+                        super::ScalarType::I8)),
+            Constant::TensorI16(tensor) 
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U8))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
+                        super::ScalarType::I16)),
+            Constant::TensorI32(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U8))
-                }
-            },
-            Constant::TensorU16(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U16))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U16))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U16))
-                }
-            },
-            Constant::TensorU32(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U32))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U32))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U32))
-                }
-            },
-            Constant::TensorU64(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U64))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U64))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::U64))
-                }
-            },
-            Constant::TensorI8(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I8))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I8))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I8))
-                }
-            },
-            Constant::TensorI16(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I16))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I16))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I16))
-                }
-            },
-            Constant::TensorI32(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I32))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I32))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I32))
-                }
-            },
-            Constant::TensorI64(tensor) => {
-                let dimension = tensor.dimension();
-
-                if dimension.0 > 1 && dimension.1 == 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor1(
-                        dimension.0,
+                        super::ScalarType::I32)),
+            Constant::TensorI64(tensor)
+                => super::GeneralType::Tensor(
+                        tensor.dimension().0,
+                        tensor.dimension().1,
+                        tensor.dimension().2,
                         super::ElementType(tensor.channels() as _,
                         super::ScalarType::I64))
-                } else if dimension.0 > 1 && dimension.1 > 1 && dimension.2 == 1 {
-                    super::GeneralType::Tensor2(
-                        dimension.0,
-                        dimension.1,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I64))
-                } else {
-                    super::GeneralType::Tensor3(
-                        dimension.0,
-                        dimension.1,
-                        dimension.2,
-                        super::ElementType(tensor.channels() as _,
-                        super::ScalarType::I64))
-                }
-            },
         }
     }
 }
