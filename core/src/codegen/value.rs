@@ -2,9 +2,94 @@ use super::{
     Operand,
     Constant,
     Node,
+    GeneralType,
+    ElementType,
 };
 
+use crate::Errors;
+
 pub struct Value(pub(super) Operand);
+
+impl Value {
+    #[allow(clippy::should_implement_trait)]
+    pub fn add(self, operand: Value) -> crate::Result<Self> {
+
+        // Check operand types
+        match (self.0.general_type(), operand.0.general_type()) {
+            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor3(bx, by, bz, bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+    
+                if ax != bx || ay != by || az != bz {
+                    return Errors::DifferentOperandDimension.into();
+                }
+            },
+            (GeneralType::Element(ElementType(an, at)), GeneralType::Element(ElementType(bn, bt))) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+
+                if an != bn {
+                    return Errors::DifferentOperandDimension.into();
+                }
+            },
+            _ => { return Errors::InvalidOperandTypes.into(); }
+        }
+
+        Ok(Self(Operand::Node(Box::new(Node::Add(self.0, operand.0)))))
+    }
+    
+    pub fn multiply(self, operand: Value) -> crate::Result<Self> {
+        match (self.0.general_type(), operand.0.general_type()) {
+            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+                
+                if ay != bx || az != bz {
+                    return Errors::IncompatibleOperandDimensions.into();
+                }
+            },
+            (GeneralType::Tensor(_, _, _, at), GeneralType::Element(bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+            },
+            (GeneralType::Element(at), GeneralType::Tensor(_, _, _, bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+            }
+            (GeneralType::Element(at), GeneralType::Element(abt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+            }
+        }
+
+        Ok(Self(Operand::Node(Box::new(Node::Multiply(self.0, operand.0)))))
+    }
+
+    pub fn hadamard(self, operand: Value) -> crate::Result<Self> {
+
+        // Start checking operands
+        match (self.0.general_type(), operand.0.general_type()) {
+            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+    
+                if ax != bx || ay != by || az != bz {
+                    return Errors::DifferentOperandDimension.into();
+                }
+            },
+            _ => { return Errors::InvalidOperandTypes.into(); }
+        }
+
+        Ok(Self(Operand::Node(Box::new(Node::HadamardProduct(self.0, operand.0)))))
+    }
+}
 
 #[allow(clippy::from_over_into)]
 impl Into<super::Operand> for Value {
