@@ -5,7 +5,10 @@ pub(crate) enum ErrorVariants {
     InvalidTensorLayout,
     TensorAllocationFailed,
     ElementAllocationFailed,
-    OpHadamardNotSameType,
+    DifferentOperandTypes,
+    DifferentOperandDimension,
+    InvalidOperandTypes,
+    IncompatibleOperandDimensions,
     TensorNonUniformChannel,
 }
 
