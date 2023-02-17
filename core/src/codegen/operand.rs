@@ -1,14 +1,17 @@
 #[derive(PartialEq)]
 pub enum Operand {
     Parameter(u32, super::GeneralType),
-    Node(Box<super::Node>)
+    Constant(super::Constant),
+    Node(Box<super::Node>),
 }
 
 impl Operand {
     fn general_type(&self) -> super::GeneralType {
         match self {
-            Operand::Parameter(_, ty) => *ty,
-            Operand::Node(inner) => inner.result_type(),
+            Operand::Parameter(_, type_) => *type_,
+            Operand::Constant(constant)
+                => constant.general_type(),
+            Operand::Node(node) => node.result_type(),
         }
     }
 }
