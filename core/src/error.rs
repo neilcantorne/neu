@@ -4,7 +4,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub(crate) enum ErrorVariants {
     InvalidTensorLayout,
     TensorAllocationFailed,
-    OpHadamardNotSameType
+    ElementAllocationFailed,
+    OpHadamardNotSameType,
+    TensorNonUniformChannel,
 }
 
 impl<T> From<ErrorVariants> for Result<T> {
