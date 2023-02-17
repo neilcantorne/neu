@@ -6,7 +6,7 @@ pub enum Operand {
 }
 
 impl Operand {
-    fn general_type(&self) -> super::GeneralType {
+    pub(super) fn general_type(&self) -> super::GeneralType {
         match self {
             Operand::Parameter(_, type_) => *type_,
             Operand::Constant(constant)
