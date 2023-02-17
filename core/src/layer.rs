@@ -1,10 +1,7 @@
-pub trait Layer where 
-    Self::Input: crate::LayerValue + Sized, 
-    Self::Output: crate::LayerValue + Sized,
-    Self::Trainables: crate::LayerTrainables + Sized {
+pub trait Layer where Self::Trainables: crate::LayerTrainables {
     type Input;
     type Output;
     type Trainables;
 
-    fn generate_kernel(&self, input: crate::RefValue) -> crate::Kernel<Self::Input, Self::Output, Self::Trainables>;
+    fn operations(&self, input: crate::Value) -> crate::Value;
 }
