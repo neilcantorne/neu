@@ -16,7 +16,7 @@ impl Value {
 
         // Check operand types
         match (self.0.general_type(), operand.0.general_type()) {
-            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor3(bx, by, bz, bt)) => {
+            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
                 if at != bt {
                     return Errors::DifferentOperandTypes.into();
                 }
@@ -42,7 +42,7 @@ impl Value {
     
     pub fn multiply(self, operand: Value) -> crate::Result<Self> {
         match (self.0.general_type(), operand.0.general_type()) {
-            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
+            (GeneralType::Tensor(_, ay, az, at), GeneralType::Tensor(bx, _, bz, bt)) => {
                 if at != bt {
                     return Errors::DifferentOperandTypes.into();
                 }
@@ -61,7 +61,7 @@ impl Value {
                     return Errors::DifferentOperandTypes.into();
                 }
             }
-            (GeneralType::Element(at), GeneralType::Element(abt)) => {
+            (GeneralType::Element(at), GeneralType::Element(bt)) => {
                 if at != bt {
                     return Errors::DifferentOperandTypes.into();
                 }
