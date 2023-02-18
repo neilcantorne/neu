@@ -4,7 +4,7 @@ pub enum Node {
     Subtraction(super::Operand, super::Operand),
     Division(super::Operand, super::Operand),
     Multiply(super::Operand, super::Operand),
-    Hadamard(super::Operand, super::Operand),
+    HadamardProduct(super::Operand, super::Operand),
 }
 
 impl Node {
@@ -14,7 +14,7 @@ impl Node {
             Node::Subtraction(_, _) => todo!(),
             Node::Division(_, _) => todo!(),
             Node::Multiply(_, _) => todo!(),
-            Node::Hadamard(_, _) => todo!(),
+            Node::HadamardProduct(_, _) => todo!(),
         }
     }
 }
