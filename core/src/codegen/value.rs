@@ -259,6 +259,18 @@ impl Value {
         })
     }
 
+    pub fn activation(self, activation_fn: &crate::ActivationFunction) -> crate::Result<Self> {
+        match activation_fn {
+            crate::ActivationFunction::Sigmoid => self.sigmoid(),
+            crate::ActivationFunction::Tanh => self.tanh(),
+            crate::ActivationFunction::Relu => self.relu(),
+            crate::ActivationFunction::LeakyRelu(beta) => self.leaky_relu(*beta),
+            crate::ActivationFunction::Elu => self.elu(),
+            crate::ActivationFunction::Swish => self.swish(),
+            crate::ActivationFunction::Softplus(beta) => self.softplus(*beta),
+        }
+    }
+
     pub fn sigmoid(self) -> crate::Result<Self> {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Sigmoid(self.inner))),
