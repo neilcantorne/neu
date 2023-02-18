@@ -71,7 +71,7 @@ impl Value {
         Ok(Self(Operand::Node(Box::new(Node::Multiply(self.0, operand.0)))))
     }
 
-    pub fn hadamard(self, operand: Value) -> crate::Result<Self> {
+    pub fn hadamard_product(self, operand: Value) -> crate::Result<Self> {
 
         // Start checking operands
         match (self.0.general_type(), operand.0.general_type()) {
