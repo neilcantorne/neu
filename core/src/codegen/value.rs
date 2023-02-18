@@ -12,7 +12,7 @@ pub struct Value(pub(super) Operand);
 
 impl Value {
     #[allow(clippy::should_implement_trait)]
-    pub fn add(self, operand: Value) -> crate::Result<Self> {
+    pub fn add(self, operand: Self) -> crate::Result<Self> {
 
         // Check operand types
         match (self.0.general_type(), operand.0.general_type()) {
@@ -40,7 +40,7 @@ impl Value {
         Ok(Self(Operand::Node(Box::new(Node::Add(self.0, operand.0)))))
     }
     
-    pub fn multiply(self, operand: Value) -> crate::Result<Self> {
+    pub fn multiply(self, operand: Self) -> crate::Result<Self> {
         match (self.0.general_type(), operand.0.general_type()) {
             (GeneralType::Tensor(_, ay, az, at), GeneralType::Tensor(bx, _, bz, bt)) => {
                 if at != bt {
@@ -71,7 +71,7 @@ impl Value {
         Ok(Self(Operand::Node(Box::new(Node::Multiply(self.0, operand.0)))))
     }
 
-    pub fn hadamard_product(self, operand: Value) -> crate::Result<Self> {
+    pub fn hadamard_product(self, operand: Self) -> crate::Result<Self> {
 
         // Start checking operands
         match (self.0.general_type(), operand.0.general_type()) {
