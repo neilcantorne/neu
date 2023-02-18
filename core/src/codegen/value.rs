@@ -27,7 +27,7 @@ impl Value {
                 }
     
                 if ax != bx || ay != by || az != bz {
-                    return Errors::DifferentOperandDimension.into();
+                    return Errors::DifferentOperandDimensions.into();
                 }
 
                 Ok(Self {
@@ -41,7 +41,7 @@ impl Value {
                 }
 
                 if an != bn {
-                    return Errors::DifferentOperandDimension.into();
+                    return Errors::DifferentOperandDimensions.into();
                 }
 
                 Ok(Self {
@@ -64,7 +64,7 @@ impl Value {
                 }
     
                 if ax != bx || ay != by || az != bz {
-                    return Errors::DifferentOperandDimension.into();
+                    return Errors::DifferentOperandDimensions.into();
                 }
 
                 Ok(Self {
@@ -78,7 +78,7 @@ impl Value {
                 }
 
                 if an != bn {
-                    return Errors::DifferentOperandDimension.into();
+                    return Errors::DifferentOperandDimensions.into();
                 }
 
                 Ok(Self {
@@ -145,7 +145,7 @@ impl Value {
                 }
     
                 if ax != bx || ay != by || az != bz {
-                    return Errors::DifferentOperandDimension.into();
+                    return Errors::DifferentOperandDimensions.into();
                 }
 
                 Ok(Self {
@@ -177,6 +177,22 @@ impl Value {
 
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Divide(self.inner, operand.inner))),
+            general_type
+        })
+    }
+
+    pub fn convolve(self, size: (u32, u32), stride: (u32, u32)) -> crate::Result<Self> {
+        let general_type = match self.general_type {
+            GeneralType::Tensor(x, y, z, ty) => {
+                GeneralType::Tensor(size.0, size.1, z, ty)
+            },
+            GeneralType::Element(_) => {
+                return Errors::RequiresTensor.into();
+            }
+        };
+
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Convolve(self.inner, size, stride))),
             general_type
         })
     }

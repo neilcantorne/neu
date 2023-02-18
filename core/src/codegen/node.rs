@@ -5,6 +5,7 @@ pub enum Node {
     Divide(super::Operand, super::Operand),
     Multiply(super::Operand, super::Operand),
     HadamardProduct(super::Operand, super::Operand),
+    Convolve(super::Operand, (u32, u32), (u32, u32)),
     Sigmoid(super::Operand),
     Tanh(super::Operand),
     Relu(super::Operand),
