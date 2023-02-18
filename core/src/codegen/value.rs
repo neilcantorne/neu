@@ -52,6 +52,43 @@ impl Value {
             _ => { Errors::InvalidOperandTypes.into() }
         }
     }
+
+    pub fn subtract(self, operand: impl Into<Self>) -> crate::Result<Self> {
+        let operand = operand.into();
+        
+        // Check operand types
+        match (self.general_type, operand.general_type) {
+            (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+    
+                if ax != bx || ay != by || az != bz {
+                    return Errors::DifferentOperandDimension.into();
+                }
+
+                Ok(Self {
+                    inner: Operand::Node(Box::new(Node::Add(self.inner, operand.inner))),
+                    general_type: GeneralType::Tensor(ax, ay, az, at)
+                })
+            },
+            (GeneralType::Element(ElementType(an, at)), GeneralType::Element(ElementType(bn, bt))) => {
+                if at != bt {
+                    return Errors::DifferentOperandTypes.into();
+                }
+
+                if an != bn {
+                    return Errors::DifferentOperandDimension.into();
+                }
+
+                Ok(Self {
+                    inner: Operand::Node(Box::new(Node::Subtract(self.inner, operand.inner))),
+                    general_type: self.general_type
+                })
+            },
+            _ => { Errors::InvalidOperandTypes.into() }
+        }
+    }
     
     pub fn multiply(self, operand: impl Into<Self>) -> crate::Result<Self> {
         let operand = operand.into();

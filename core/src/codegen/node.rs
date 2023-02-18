@@ -1,7 +1,7 @@
 #[derive(PartialEq)]
 pub enum Node {
     Add(super::Operand, super::Operand),
-    Subtraction(super::Operand, super::Operand),
+    Subtract(super::Operand, super::Operand),
     Divide(super::Operand, super::Operand),
     Multiply(super::Operand, super::Operand),
     HadamardProduct(super::Operand, super::Operand),
