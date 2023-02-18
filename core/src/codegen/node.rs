@@ -6,6 +6,7 @@ pub enum Node {
     Multiply(super::Operand, super::Operand),
     HadamardProduct(super::Operand, super::Operand),
     Convolve(super::Operand, (u32, u32), (u32, u32)),
+    GrandSum(super::Operand),
     Sigmoid(super::Operand),
     Tanh(super::Operand),
     Relu(super::Operand),

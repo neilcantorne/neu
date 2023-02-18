@@ -197,6 +197,22 @@ impl Value {
         })
     }
 
+    pub fn grand_sum(self) -> crate::Result<Self> {
+        let general_type = match self.general_type {
+            GeneralType::Tensor(_, _, _, ty) => {
+                GeneralType::Element(ty)
+            },
+            GeneralType::Element(_) => {
+                return Errors::RequiresTensor.into();
+            }
+        };
+
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::GrandSum(self.inner))),
+            general_type
+        })
+    }
+
     pub fn sigmoid(self) -> crate::Result<Self> {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Sigmoid(self.inner))),
