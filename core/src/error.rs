@@ -9,6 +9,7 @@ pub(crate) enum ErrorVariants {
     DifferentOperandDimension,
     InvalidOperandTypes,
     IncompatibleOperandDimensions,
+    IncompatibleOperandTypes,
     TensorNonUniformChannel,
 }
 
@@ -34,6 +35,7 @@ impl std::fmt::Debug for Error {
             ErrorVariants::DifferentOperandDimension => "Different_operand_dimension",
             ErrorVariants::InvalidOperandTypes => "Invalid operand types",
             ErrorVariants::IncompatibleOperandDimensions => "Incompatible operand dimensions",
+            ErrorVariants::IncompatibleOperandTypes => "Incompatible operand types",
             ErrorVariants::TensorNonUniformChannel => "Tensor non-uniform channel",
         })
     }

@@ -89,6 +89,26 @@ impl Value {
 
         Ok(Self(Operand::Node(Box::new(Node::HadamardProduct(self.0, operand.0)))))
     }
+
+    pub fn divide(self, operand: Self) -> crate::Result<Self> {
+
+        match (self.0.general_type(), operand.0.general_type()) {
+            (GeneralType::Tensor(_, _, _, _), GeneralType::Tensor(_, _, _, _)) => {
+                return Errors::IncompatibleOperandTypes.into();
+            },
+            (GeneralType::Tensor(_, _, _, at), GeneralType::Element(bt)) => if at != bt {
+                return Errors::DifferentOperandTypes.into();
+            },
+            (GeneralType::Element(at), GeneralType::Tensor(_, _, _, bt)) => if at != bt {
+                return Errors::DifferentOperandTypes.into();
+            },
+            (GeneralType::Element(at), GeneralType::Element(bt)) => if at != bt {
+                return Errors::DifferentOperandTypes.into();
+            },
+        }
+
+        Ok(Self(Operand::Node(Box::new(Node::Divide(self.0, operand.0)))))
+    }
 }
 
 #[allow(clippy::from_over_into)]
