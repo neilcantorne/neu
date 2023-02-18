@@ -343,7 +343,7 @@ impl From<i64> for Value {
     fn from(value: i64) -> Self {
         Self {
             inner: Operand::Constant(Constant::ScalarI64(value)),
-            general_type: GeneralType::Element(ElementType(1, ScalarType::F64))
+            general_type: GeneralType::Element(ElementType(1, ScalarType::I32))
         }
     }
 }
