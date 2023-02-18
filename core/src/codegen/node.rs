@@ -5,6 +5,13 @@ pub enum Node {
     Divide(super::Operand, super::Operand),
     Multiply(super::Operand, super::Operand),
     HadamardProduct(super::Operand, super::Operand),
+    Sigmoid(super::Operand),
+    Tanh(super::Operand),
+    Relu(super::Operand),
+    LeakyRelu(super::Operand, super::Operand),
+    Elu(super::Operand),
+    Swish(super::Operand),
+    Softplus(super::Operand),
 }
 
 impl Node {
@@ -15,6 +22,13 @@ impl Node {
             Node::Divide(_, _) => todo!(),
             Node::Multiply(_, _) => todo!(),
             Node::HadamardProduct(_, _) => todo!(),
+            Node::Sigmoid(_) => todo!(),
+            Node::Tanh(_) => todo!(),
+            Node::Relu(_) => todo!(),
+            Node::LeakyRelu(_, _) => todo!(),
+            Node::Elu(_) => todo!(),
+            Node::Swish(_) => todo!(),
+            Node::Softplus(_) => todo!(),
         }
     }
 }
