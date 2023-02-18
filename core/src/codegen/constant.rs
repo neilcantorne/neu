@@ -1,5 +1,16 @@
 #[derive(PartialEq)]
 pub enum Constant {
+    ScalarF32(f32),
+    ScalarF64(f32),
+    ScalarU8(u8),
+    ScalarU16(u16),
+    ScalarU32(u32),
+    ScalarU64(u64),
+    ScalarI8(i8),
+    ScalarI16(i16),
+    ScalarI32(i32),
+    ScalarI64(i64),
+
     ElementF32(crate::Element<f32>),
     ElementF64(crate::Element<f64>),
     ElementU8(crate::Element<u8>),
