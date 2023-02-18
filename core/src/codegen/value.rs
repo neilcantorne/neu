@@ -137,6 +137,55 @@ impl Value {
             general_type
         })
     }
+
+    pub fn sigmoid(self) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Sigmoid(self.inner))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn tanh(self) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Tanh(self.inner))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn relu(self) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Relu(self.inner))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn leaky_relu(self, beta: f32) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::LeakyRelu(self.inner, beta))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn elu(self) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Elu(self.inner))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn swish(self) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Swish(self.inner))),
+            general_type: self.general_type
+        })
+    }
+
+    pub fn softplus(self, beta: f32) -> crate::Result<Self> {
+        Ok(Self {
+            inner: Operand::Node(Box::new(Node::Softplus(self.inner, beta ))),
+            general_type: self.general_type
+        })
+    }
 }
 
 impl TryFrom<f32> for Value {

@@ -8,8 +8,8 @@ pub enum Node {
     Sigmoid(super::Operand),
     Tanh(super::Operand),
     Relu(super::Operand),
-    LeakyRelu(super::Operand, super::Operand),
+    LeakyRelu(super::Operand, f32),
     Elu(super::Operand),
     Swish(super::Operand),
-    Softplus(super::Operand),
+    Softplus(super::Operand, f32),
 }
