@@ -16,7 +16,9 @@ pub struct Value {
 
 impl Value {
     #[allow(clippy::should_implement_trait)]
-    pub fn add(self, operand: Self) -> crate::Result<Self> {
+    pub fn add(self, operand: impl Into<Self>) -> crate::Result<Self> {
+        let operand = operand.into();
+        
         // Check operand types
         match (self.general_type, operand.general_type) {
             (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
@@ -51,7 +53,9 @@ impl Value {
         }
     }
     
-    pub fn multiply(self, operand: Self) -> crate::Result<Self> {
+    pub fn multiply(self, operand: impl Into<Self>) -> crate::Result<Self> {
+        let operand = operand.into();
+
         let general_type = match (self.general_type, operand.general_type) {
             (GeneralType::Tensor(ax, ay, az, at), GeneralType::Tensor(bx, by, bz, bt)) => {
                 if at != bt {
@@ -93,7 +97,8 @@ impl Value {
         })
     }
 
-    pub fn hadamard_product(self, operand: Self) -> crate::Result<Self> {
+    pub fn hadamard_product(self, operand: impl Into<Self>) -> crate::Result<Self> {
+        let operand = operand.into();
 
         // Start checking operands
         match (self.general_type, operand.general_type) {
@@ -111,11 +116,12 @@ impl Value {
                     general_type: self.general_type
                 })
             },
-            _ => { return Errors::InvalidOperandTypes.into(); }
+            _ => { Errors::InvalidOperandTypes.into() }
         }
     }
 
-    pub fn divide(self, operand: Self) -> crate::Result<Self> {
+    pub fn divide(self, operand: impl Into<Self>) -> crate::Result<Self> {
+        let operand = operand.into();
 
         let general_type = match (self.general_type, operand.general_type) {
             (GeneralType::Tensor(_, _, _, _), GeneralType::Tensor(_, _, _, _)) => {
@@ -188,112 +194,103 @@ impl Value {
     }
 }
 
-impl TryFrom<f32> for Value {
-    type Error = crate::Error;
+impl From<f32> for Value {
 
-    fn try_from(value: f32) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementF32(value.try_into()?)),
+    fn from(value: f32) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarF32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::F32))
-        })
+        }
     }
 }
 
-impl TryFrom<f64> for Value {
-    type Error = crate::Error;
+impl From<f64> for Value {
 
-    fn try_from(value: f64) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementF64(value.try_into()?)),
+    fn from(value: f64) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarF64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::F64))
-        })
+        }
     }
 }
 
-impl TryFrom<u8> for Value {
-    type Error = crate::Error;
+impl From<u8> for Value {
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementU8(value.try_into()?)),
+    fn from(value: u8) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarU8(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U8))
-        })
+        }
     }
 }
 
-impl TryFrom<u16> for Value {
-    type Error = crate::Error;
+impl From<u16> for Value {
 
-    fn try_from(value: u16) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementU16(value.try_into()?)),
+    fn from(value: u16) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarU16(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U16))
-        })
+        }
     }
 }
 
-impl TryFrom<u32> for Value {
-    type Error = crate::Error;
+impl From<u32> for Value {
 
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementU32(value.try_into()?)),
+    fn from(value: u32) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarU32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U32))
-        })
+        }
     }
 }
 
-impl TryFrom<u64> for Value {
-    type Error = crate::Error;
+impl From<u64> for Value {
 
-    fn try_from(value: u64) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementU64(value.try_into()?)),
+    fn from(value: u64) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarU64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U64))
-        })
+        }
     }
 }
 
-impl TryFrom<i8> for Value {
-    type Error = crate::Error;
+impl From<i8> for Value {
 
-    fn try_from(value: i8) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementI8(value.try_into()?)),
+
+    fn from(value: i8) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarI8(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I8))
-        })
+        }
     }
 }
 
-impl TryFrom<i16> for Value {
-    type Error = crate::Error;
+impl From<i16> for Value {
 
-    fn try_from(value: i16) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementI16(value.try_into()?)),
+    fn from(value: i16) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarI16(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I16))
-        })
+        }
     }
 }
 
-impl TryFrom<i32> for Value {
-    type Error = crate::Error;
+impl From<i32> for Value {
 
-    fn try_from(value: i32) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementI32(value.try_into()?)),
+    fn from(value: i32) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarI32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I32))
-        })
+        }
     }
 }
 
-impl TryFrom<i64> for Value {
-    type Error = crate::Error;
+impl From<i64> for Value {
 
-    fn try_from(value: i64) -> Result<Self, Self::Error> {
-        Ok(Self {
-            inner: Operand::Constant(Constant::ElementI64(value.try_into()?)),
+    fn from(value: i64) -> Self {
+        Self {
+            inner: Operand::Constant(Constant::ScalarI64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::F64))
-        })
+        }
     }
 }
