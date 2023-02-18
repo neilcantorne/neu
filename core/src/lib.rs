@@ -7,6 +7,7 @@ mod tensor;
 mod element;
 mod dimension;
 mod error;
+mod activation_function;
 
 use error::ErrorVariants as Errors;
 pub use error::Error;
@@ -19,4 +20,5 @@ pub use layer_trainables::LayerTrainables;
 pub use kernel::Kernel;
 pub use dimension::Dimension;
 pub use tensor::Tensor;
+pub use activation_function::ActivationFunction;
 pub use element::{ Element, ChannelCount };
