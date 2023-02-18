@@ -6,11 +6,12 @@ pub(crate) enum ErrorVariants {
     TensorAllocationFailed,
     ElementAllocationFailed,
     DifferentOperandTypes,
-    DifferentOperandDimension,
+    DifferentOperandDimensions,
     InvalidOperandTypes,
     IncompatibleOperandDimensions,
     IncompatibleOperandTypes,
     TensorNonUniformChannel,
+    RequiresTensor,
 }
 
 impl<T> From<ErrorVariants> for Result<T> {
@@ -32,11 +33,12 @@ impl std::fmt::Debug for Error {
             ErrorVariants::TensorAllocationFailed => "Tensor allocation failed",
             ErrorVariants::ElementAllocationFailed => "Element allocation failed",
             ErrorVariants::DifferentOperandTypes => "Different operand types",
-            ErrorVariants::DifferentOperandDimension => "Different_operand_dimension",
+            ErrorVariants::DifferentOperandDimensions => "Different operand dimensions",
             ErrorVariants::InvalidOperandTypes => "Invalid operand types",
             ErrorVariants::IncompatibleOperandDimensions => "Incompatible operand dimensions",
             ErrorVariants::IncompatibleOperandTypes => "Incompatible operand types",
             ErrorVariants::TensorNonUniformChannel => "Tensor non-uniform channel",
+            ErrorVariants::RequiresTensor => "Requires Tensor",
         })
     }
 }
