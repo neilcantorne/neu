@@ -1,7 +1,7 @@
 #[derive(PartialEq)]
 pub enum Constant {
     ScalarF32(f32),
-    ScalarF64(f32),
+    ScalarF64(f64),
     ScalarU8(u8),
     ScalarU16(u16),
     ScalarU32(u32),
