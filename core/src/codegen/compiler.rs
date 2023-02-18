@@ -10,8 +10,7 @@ pub struct Compiler<'ctx> {
 }
 
 impl<'ctx> Compiler<'ctx> {
-    pub fn build(&self, graph: super::graph::Graph) {
-        self.module.add_function("", ty, None);
-        //self.module.
+    fn compile(&self, node: super::Node) {
+        todo!()
     }
 }

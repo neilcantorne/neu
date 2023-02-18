@@ -1,3 +1,4 @@
+mod compiler;
 mod value;
 mod general_type;
 mod scalar_type;
