@@ -4,14 +4,3 @@ pub enum Operand {
     Constant(super::Constant),
     Node(Box<super::Node>),
 }
-
-impl Operand {
-    pub(super) fn general_type(&self) -> super::GeneralType {
-        match self {
-            Operand::Parameter(_, type_) => *type_,
-            Operand::Constant(constant)
-                => constant.general_type(),
-            Operand::Node(node) => node.result_type(),
-        }
-    }
-}
