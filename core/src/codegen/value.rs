@@ -10,13 +10,13 @@ use super::{
 use crate::Errors;
 
 pub struct Value {
-    joinable: Joinable,
+    convergent: Convergent,
     inner: Operand,
     general_type: GeneralType,
 }
 
 #[derive(PartialEq)]
-enum Joinable {
+enum Convergent {
     None,
     Convolve((u32, u32, u32), (u32, u32), (u32, u32)),
 }
@@ -40,7 +40,7 @@ impl Value {
                 Ok(Self {
                     inner: Operand::Node(Box::new(Node::Add(self.inner, operand.inner))),
                     general_type: GeneralType::Tensor(ax, ay, az, at),
-                    joinable: self.joinable
+                    convergent: self.convergent
                 })
             },
             (GeneralType::Element(ElementType(an, at)), GeneralType::Element(ElementType(bn, bt))) => {
@@ -55,7 +55,7 @@ impl Value {
                 Ok(Self {
                     inner: Operand::Node(Box::new(Node::Add(self.inner, operand.inner))),
                     general_type: self.general_type,
-                    joinable: self.joinable
+                    convergent: self.convergent
                 })
             },
             _ => { Errors::InvalidOperandTypes.into() }
@@ -79,7 +79,7 @@ impl Value {
                 Ok(Self {
                     inner: Operand::Node(Box::new(Node::Add(self.inner, operand.inner))),
                     general_type: GeneralType::Tensor(ax, ay, az, at),
-                    joinable: self.joinable
+                    convergent: self.convergent
                 })
             },
             (GeneralType::Element(ElementType(an, at)), GeneralType::Element(ElementType(bn, bt))) => {
@@ -94,7 +94,7 @@ impl Value {
                 Ok(Self {
                     inner: Operand::Node(Box::new(Node::Subtract(self.inner, operand.inner))),
                     general_type: self.general_type,
-                    joinable: self.joinable
+                    convergent: self.convergent
                 })
             },
             _ => { Errors::InvalidOperandTypes.into() }
@@ -142,7 +142,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Multiply(self.inner, operand.inner))),
             general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -163,7 +163,7 @@ impl Value {
                 Ok(Self {
                     inner: Operand::Node(Box::new(Node::HadamardProduct(self.inner, operand.inner))), 
                     general_type: self.general_type,
-                    joinable: self.joinable
+                    convergent: self.convergent
                 })
             },
             _ => { Errors::InvalidOperandTypes.into() }
@@ -191,19 +191,19 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Divide(self.inner, operand.inner))),
             general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
     pub fn convolve(mut self, size: (u32, u32), stride: (u32, u32)) -> crate::Result<Self> {
 
-        if self.joinable != Joinable::None {
+        if self.convergent != Convergent::None {
             return Errors::UnableToConvolve.into();
         }
 
         let general_type = match self.general_type {
             GeneralType::Tensor(x, y, z, ty) => {
-                self.joinable = Joinable::Convolve((x, y, z), size, stride);
+                self.convergent = Convergent::Convolve((x, y, z), size, stride);
 
                 GeneralType::Tensor(size.0, size.1, z, ty)
             },
@@ -216,46 +216,29 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Convolve(self.inner, size, stride))),
             general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
-    pub fn grand_sum(self) -> crate::Result<Self> {
-        let general_type = match self.general_type {
-            GeneralType::Tensor(_, _, _, ty) => {
-                GeneralType::Element(ty)
+    pub fn converge_sum(self) -> crate::Result<Self> {
+        let general_type = match self.convergent {
+            Convergent::None => {
+                return Errors::UnableToConvergeOperand.into();
             },
-            GeneralType::Element(_) => {
-                return Errors::RequiresTensor.into();
-            }
-        };
-
-        Ok(Self {
-            inner: Operand::Node(Box::new(Node::GrandSum(self.inner))),
-            general_type,
-            joinable: self.joinable
-        })
-    }
-
-    pub fn join(self) -> crate::Result<Self> {
-        let general_type = match self.joinable {
-            Joinable::None => {
-                return Errors::UnableToJoinOperand.into();
-            },
-            Joinable::Convolve(input, filter, stride)
+            Convergent::Convolve(input, filter, stride)
                 => if let GeneralType::Element(element) = self.general_type {
                 let x = (input.0 - filter.0)/ stride.0 + 1;
                 let y = (input.1 - filter.1)/ stride.1 + 1;
                 GeneralType::Tensor(x, y, input.2, element)
             } else {
-                return Errors::UnableToJoinOperand.into();
+                return Errors::UnableToConvergeOperand.into();
             },
         };
 
         Ok(Self {
-            inner: Operand::Node(Box::new(Node::GrandSum(self.inner))),
+            inner: Operand::Node(Box::new(Node::ConvergeSum(self.inner))),
             general_type,
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         })
     }
 
@@ -275,7 +258,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Sigmoid(self.inner))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -283,7 +266,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Tanh(self.inner))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -291,7 +274,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Relu(self.inner))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -299,7 +282,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::LeakyRelu(self.inner, beta))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -307,7 +290,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Elu(self.inner))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -315,7 +298,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Swish(self.inner))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 
@@ -323,7 +306,7 @@ impl Value {
         Ok(Self {
             inner: Operand::Node(Box::new(Node::Softplus(self.inner, beta ))),
             general_type: self.general_type,
-            joinable: self.joinable
+            convergent: self.convergent
         })
     }
 }
@@ -334,7 +317,7 @@ impl From<f32> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarF32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::F32)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -345,7 +328,7 @@ impl From<f64> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarF64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::F64)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -356,7 +339,7 @@ impl From<u8> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarU8(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U8)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -367,7 +350,7 @@ impl From<u16> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarU16(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U16)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -378,7 +361,7 @@ impl From<u32> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarU32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U32)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -389,7 +372,7 @@ impl From<u64> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarU64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::U64)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -401,7 +384,7 @@ impl From<i8> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarI8(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I8)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -412,7 +395,7 @@ impl From<i16> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarI16(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I16)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -423,7 +406,7 @@ impl From<i32> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarI32(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I32)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }
@@ -434,7 +417,7 @@ impl From<i64> for Value {
         Self {
             inner: Operand::Constant(Constant::ScalarI64(value)),
             general_type: GeneralType::Element(ElementType(1, ScalarType::I32)),
-            joinable: Joinable::None,
+            convergent: Convergent::None,
         }
     }
 }

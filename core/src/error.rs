@@ -12,7 +12,7 @@ pub(crate) enum ErrorVariants {
     IncompatibleOperandTypes,
     TensorNonUniformChannel,
     RequiresTensor,
-    UnableToJoinOperand,
+    UnableToConvergeOperand,
     UnableToConvolve,
 }
 
@@ -41,7 +41,7 @@ impl std::fmt::Debug for Error {
             ErrorVariants::IncompatibleOperandTypes => "Incompatible operand types",
             ErrorVariants::TensorNonUniformChannel => "Tensor non-uniform channel",
             ErrorVariants::RequiresTensor => "Requires Tensor",
-            ErrorVariants::UnableToJoinOperand => "Unable to join operand",
+            ErrorVariants::UnableToConvergeOperand => "Unable to join operand",
             ErrorVariants::UnableToConvolve => "Unable to convolve operand",
         })
     }
