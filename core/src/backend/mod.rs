@@ -6,7 +6,7 @@ pub use engine::Engine;
 pub use device::Device;
 pub use query_device_iter::QueryDeviceIter;
 
-use engine::{ CudaEngine, ClEngineInner }
+use engine::{ CudaEngine, ClEngine };
 use device::{ CudaDevice, ClDevice };
 
 // Short enums

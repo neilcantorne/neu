@@ -21,12 +21,12 @@ impl EngineInner for CudaEngine {
 
 }
 
-pub(super) struct ClEngineInner {
+pub(super) struct ClEngine {
 
 }
 
 
 
-impl EngineInner for ClEngineInner {
+impl EngineInner for ClEngine {
     
 }
