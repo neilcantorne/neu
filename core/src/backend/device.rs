@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, ffi::CStr};
 
 pub struct Device(pub(super) Arc<dyn DeviceInner>);
 
@@ -13,14 +13,20 @@ impl Device {
     }
 
     #[inline]
-    fn backend(&self) -> super::Backend {
+    pub fn backend(&self) -> super::Backend {
         self.0.backend()
+    }
+
+    #[inline]
+    pub fn name(&self) -> crate::Result<String> {
+        self.0.name()
     }
 }
 
 pub(super) trait DeviceInner {
     fn create_engine(&self) -> crate::Result<super::Engine>;
     fn backend(&self) -> super::Backend;
+    fn name(&self) -> crate::Result<String>;
 }
 
 pub(super) struct CudaDevice {
@@ -46,6 +52,24 @@ impl DeviceInner for CudaDevice {
 
     fn backend(&self) -> super::Backend {
         super::Backend::Cuda
+    }
+
+    fn name(&self) -> crate::Result<String> {
+        let mut buffer = [0i8; 256];
+        
+        unsafe {
+            // Try retrieving name
+            if cuda_driver_sys::cuDeviceGetName(buffer.as_mut_ptr(), 256, self.inner) != cuda_driver_sys::CUresult::CUDA_SUCCESS {
+                return crate::Errors::UnableToGetCudaDeviceName.into();
+            }
+
+            // Convert into Rust string
+            let cstr = CStr::from_ptr(buffer.as_ptr());
+            
+            Ok(cstr.to_str()
+            .or(crate::Errors::InvalidNameFormat.into())?
+            .to_owned())
+        }
     }
 }
 
@@ -74,6 +98,44 @@ impl DeviceInner for ClDevice {
 
     fn backend(&self) -> super::Backend {
         super::Backend::OpenCl
+    }
+
+    fn name(&self) -> crate::Result<String> {
+        
+        unsafe {
+            let mut length = 0usize;
+
+            // Query device name length            
+            if opencl_sys::clGetDeviceInfo(self.inner, opencl_sys::CL_DEVICE_NAME, 
+                0, std::ptr::null_mut(), &mut length) != opencl_sys::CL_SUCCESS {
+                return crate::Errors::UnableToGetOpenCLDeviceName.into();
+            }
+
+            // Allocate buffer for the name
+            let layout = std::alloc::Layout::from_size_align_unchecked(length, std::mem::align_of::<i8>());
+            let buffer = std::alloc::alloc_zeroed(layout) as *mut i8;
+
+            if buffer.is_null() {
+                return crate::Errors::UnableToGetOpenCLDeviceName.into();
+            }
+
+            // Query device name
+            if opencl_sys::clGetDeviceInfo(self.inner, opencl_sys::CL_DEVICE_NAME, 
+                length, buffer as _, std::ptr::null_mut()) != opencl_sys::CL_SUCCESS {
+                return crate::Errors::UnableToGetOpenCLDeviceName.into();
+            }
+
+            // Convert to rust string
+            let cstr = CStr::from_ptr(buffer);
+            let name = cstr.to_str()
+                .or(crate::Errors::InvalidNameFormat.into())?
+                .to_string();
+
+            // Free buffer
+            std::alloc::dealloc(buffer as _, layout);
+
+            Ok(name)
+        }
     }
 }
 
