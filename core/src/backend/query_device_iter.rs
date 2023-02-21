@@ -11,18 +11,18 @@ pub struct QueryDeviceIter {
 }
 
 impl QueryDeviceIter {
-    pub(super) fn new(backend: super::Backend) -> crate::Result<Self> {
+    pub(super) fn new(backend: super::BackendApi) -> crate::Result<Self> {
         let mut cuda_count = 0i32;
         let mut cl_platforms: Option<Vec::<opencl_sys::cl_platform_id>> = None;
         // Query CUDA device
-        if matches!(backend, super::Backend::All | super::Backend::Cuda) {
+        if matches!(backend, super::BackendApi::All | super::BackendApi::Cuda) {
             super::initialize_cuda()?;
             
             // Fill in the cuda device count
             unsafe { cuda_driver_sys::cuDeviceGetCount(&mut cuda_count); }
         }
         
-        if matches!(backend, super::Backend::All | super::Backend::OpenCl) {
+        if matches!(backend, super::BackendApi::All | super::BackendApi::OpenCl) {
             let mut cl_platform_count = 0u32;
 
             unsafe {

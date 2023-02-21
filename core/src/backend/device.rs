@@ -3,7 +3,7 @@ use std::{sync::Arc, ffi::CStr};
 pub struct Device(pub(super) Arc<dyn DeviceInner>);
 
 impl Device {
-    pub fn devices(backend: super::Backend) -> crate::Result<super::QueryDeviceIter> {
+    pub fn devices(backend: super::BackendApi) -> crate::Result<super::QueryDeviceIter> {
         super::QueryDeviceIter::new(backend)
     }
 
@@ -13,7 +13,7 @@ impl Device {
     }
 
     #[inline]
-    pub fn backend(&self) -> super::Backend {
+    pub fn backend(&self) -> super::BackendApi {
         self.0.backend()
     }
 
@@ -25,7 +25,7 @@ impl Device {
 
 pub(super) trait DeviceInner {
     fn create_engine(&self) -> crate::Result<super::Engine>;
-    fn backend(&self) -> super::Backend;
+    fn backend(&self) -> super::BackendApi;
     fn name(&self) -> crate::Result<String>;
 }
 
@@ -50,8 +50,8 @@ impl DeviceInner for CudaDevice {
         })))
     }
 
-    fn backend(&self) -> super::Backend {
-        super::Backend::Cuda
+    fn backend(&self) -> super::BackendApi {
+        super::BackendApi::Cuda
     }
 
     fn name(&self) -> crate::Result<String> {
@@ -96,8 +96,8 @@ impl DeviceInner for ClDevice {
         })))
     }
 
-    fn backend(&self) -> super::Backend {
-        super::Backend::OpenCl
+    fn backend(&self) -> super::BackendApi {
+        super::BackendApi::OpenCl
     }
 
     fn name(&self) -> crate::Result<String> {

@@ -11,7 +11,7 @@ mod activation_function;
 use error::ErrorVariants as Errors;
 pub use error::Error;
 pub use error::Result;
-pub use backend::{ Device, Engine, Backend };
+pub use backend::{ Device, Engine, BackendApi };
 pub mod layers;
 pub use codegen::Value;
 pub use layer::Layer;
