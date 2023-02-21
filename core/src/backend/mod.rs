@@ -12,11 +12,11 @@ use engine::{ CudaEngine, ClEngine };
 use device::{ CudaDevice, ClDevice };
 
 // Cuda initialization related code
-static CudaInit: bool = false;
+static IS_CUDA_INIT: bool = false;
 
 fn initialize_cuda() -> crate::Result<()>{
     unsafe {
-        if !CudaInit && cuda_driver_sys::cuInit(0) != cuda_driver_sys::cudaError_enum::CUDA_SUCCESS {
+        if !IS_CUDA_INIT && cuda_driver_sys::cuInit(0) != cuda_driver_sys::cudaError_enum::CUDA_SUCCESS {
             return crate::Errors::FailedToInitializeCuda.into();
         }
 
