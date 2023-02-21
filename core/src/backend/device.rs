@@ -62,3 +62,11 @@ impl DeviceInner for ClDevice {
         })))
     }
 }
+
+impl Drop for ClDevice {
+    fn drop(&mut self) {
+        unsafe {
+            opencl_sys::clReleaseDevice(self.inner);
+        }
+    }
+}
