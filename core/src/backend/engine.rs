@@ -31,7 +31,7 @@ impl Drop for CudaEngine {
 }
 
 pub(super) struct ClEngine {
-    pub(super) context: opencl_sys::cl_context,
+    pub(super) context: super::VoidPtr
 }
 
 impl EngineInner for ClEngine {
@@ -41,7 +41,7 @@ impl EngineInner for ClEngine {
 impl Drop for ClEngine {
     fn drop(&mut self) {
         unsafe {
-            opencl_sys::clReleaseContext(self.context);
+            cl3::ext::clReleaseContext(self.context);
         }
     }
 }

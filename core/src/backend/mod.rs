@@ -11,6 +11,9 @@ pub use backend_api::BackendApi;
 use engine::{ CudaEngine, ClEngine };
 use device::{ CudaDevice, ClDevice };
 
+// Alias *mut std::ffi::c_void for convenience
+type VoidPtr = *mut std::ffi::c_void;
+
 // Cuda initialization related code
 static IS_CUDA_INIT: bool = false;
 

@@ -160,7 +160,7 @@ impl DeviceInner for CudaDevice {
 }
 
 pub(super) struct ClDevice {
-    pub(super) inner: opencl_sys::cl_device_id
+    pub(super) inner: super::VoidPtr
 }
 
 impl DeviceInner for ClDevice {
@@ -170,9 +170,9 @@ impl DeviceInner for ClDevice {
         unsafe {
             let mut errcode_ret = 0i32;
             
-            context = opencl_sys::clCreateContext(std::ptr::null(), 1, &self.inner, None, std::ptr::null_mut(), &mut errcode_ret);
+            context = cl3::ext::clCreateContext(std::ptr::null(), 1, &self.inner, None, std::ptr::null_mut(), &mut errcode_ret);
 
-            if errcode_ret != opencl_sys::CL_SUCCESS {
+            if errcode_ret != cl3::context::CL_SUCCESS {
                 return crate::Errors::UnableToCreateOpenClContext.into();
             }
         }
@@ -192,8 +192,8 @@ impl DeviceInner for ClDevice {
             let mut length = 0usize;
 
             // Query device name length            
-            if opencl_sys::clGetDeviceInfo(self.inner, opencl_sys::CL_DEVICE_NAME, 
-                0, std::ptr::null_mut(), &mut length) != opencl_sys::CL_SUCCESS {
+            if cl3::ext::clGetDeviceInfo(self.inner, cl3::device::CL_DEVICE_NAME, 
+                0, std::ptr::null_mut(), &mut length) != 0 {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
 
@@ -206,8 +206,8 @@ impl DeviceInner for ClDevice {
             }
 
             // Query device name
-            if opencl_sys::clGetDeviceInfo(self.inner, opencl_sys::CL_DEVICE_NAME, 
-                length, buffer as _, std::ptr::null_mut()) != opencl_sys::CL_SUCCESS {
+            if cl3::ext::clGetDeviceInfo(self.inner, cl3::device::CL_DEVICE_NAME, 
+                length, buffer as _, std::ptr::null_mut()) != 0 {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
 
@@ -228,7 +228,7 @@ impl DeviceInner for ClDevice {
 impl Drop for ClDevice {
     fn drop(&mut self) {
         unsafe {
-            opencl_sys::clReleaseDevice(self.inner);
+            cl3::ext::clReleaseDevice(self.inner);
         }
     }
 }
