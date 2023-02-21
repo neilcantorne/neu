@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 cuda-driver-sys = "0.3.0"
+opencl-sys = { version = "0.2.4", features = ["CL_VERSION_3_0"] }
 inkwell = { git = "https://github.com/TheDan64/inkwell", branch = "master", features = ["llvm15-0"] }
