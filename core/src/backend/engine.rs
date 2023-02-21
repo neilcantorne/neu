@@ -22,10 +22,26 @@ impl EngineInner for CudaEngine {
 }
 
 
+impl Drop for CudaEngine {
+    fn drop(&mut self) {
+        unsafe {
+            cuda_driver_sys::cuCtxDestroy_v2(self.context);
+        }
+    }
+}
+
 pub(super) struct ClEngine {
     pub(super) context: opencl_sys::cl_context,
 }
 
 impl EngineInner for ClEngine {
     
+}
+
+impl Drop for ClEngine {
+    fn drop(&mut self) {
+        unsafe {
+            opencl_sys::clReleaseContext(self.context);
+        }
+    }
 }
