@@ -11,10 +11,16 @@ impl Device {
     pub fn create_engine(&self) -> crate::Result<super::Engine> {
         self.0.create_engine()
     }
+
+    #[inline]
+    fn backend(&self) -> super::Backend {
+        self.0.backend()
+    }
 }
 
 pub(super) trait DeviceInner {
     fn create_engine(&self) -> crate::Result<super::Engine>;
+    fn backend(&self) -> super::Backend;
 }
 
 pub(super) struct CudaDevice {
@@ -36,6 +42,10 @@ impl DeviceInner for CudaDevice {
         Ok(super::Engine(Arc::new(super::CudaEngine {
             context
         })))
+    }
+
+    fn backend(&self) -> super::Backend {
+        super::Backend::Cuda
     }
 }
 
@@ -60,6 +70,10 @@ impl DeviceInner for ClDevice {
         Ok(super::Engine(Arc::new(super::ClEngine {
             context
         })))
+    }
+
+    fn backend(&self) -> super::Backend {
+        super::Backend::OpenCl
     }
 }
 
