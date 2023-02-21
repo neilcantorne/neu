@@ -2,6 +2,9 @@ pub struct Error(ErrorVariants);
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub(crate) enum ErrorVariants {
+    FailedToInitializeCuda,
+    FailedToRetrieveCudaDevice,
+    FailedToRetrieveOpenClDevices,
     InvalidTensorLayout,
     TensorAllocationFailed,
     ElementAllocationFailed,
@@ -31,6 +34,9 @@ impl From<ErrorVariants> for Error {
 impl std::fmt::Debug for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self.0 {
+            ErrorVariants::FailedToInitializeCuda => "Failed to initialize CUDA backend",
+            ErrorVariants::FailedToRetrieveCudaDevice => "Failed to retrieve CUDA device",
+            ErrorVariants::FailedToRetrieveOpenClDevices => "Failed to retrieve OpenCL devices",
             ErrorVariants::InvalidTensorLayout => "Invalid tensor layout",
             ErrorVariants::TensorAllocationFailed => "Tensor allocation failed",
             ErrorVariants::ElementAllocationFailed => "Element allocation failed",
