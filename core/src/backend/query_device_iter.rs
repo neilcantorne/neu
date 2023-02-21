@@ -88,7 +88,6 @@ impl Iterator for QueryDeviceIter {
                 let mut device_count = 0u32;
 
                 unsafe {
-                    println!("{:?}", platforms[self.cl_platform_index]);
                     // Check the number of device in the current platform
                     if opencl_sys::clGetDeviceIDs(platforms[self.cl_platform_index], opencl_sys::CL_DEVICE_TYPE_ALL, 0, 
                         std::ptr::null_mut(), &mut device_count) != opencl_sys::CL_SUCCESS {
