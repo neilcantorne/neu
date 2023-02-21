@@ -12,7 +12,7 @@ pub(super) trait EngineInner {
 
 }
 
-struct CudaEngine {
+pub(super) struct CudaEngine {
     
 }
 
@@ -21,7 +21,7 @@ impl EngineInner for CudaEngine {
 
 }
 
-struct ClEngineInner {
+pub(super) struct ClEngineInner {
 
 }
 
