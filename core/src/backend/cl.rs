@@ -38,11 +38,21 @@ extern "C" {
         param_value: *mut (),
         param_value_size_ret: *mut usize) -> Status;
 
+    #[symbol(clCreateCommandQueueWithProperties)]
+    fn create_command_queue_with_properties(
+        context: Context,
+        device: DeviceId,
+        properties: *const QueueProperty,
+        errcode_ret: *mut Status) -> CommandQueue;
+
     #[symbol(clReleaseDevice)]
     fn release_device(device: DeviceId) -> Status;
     
     #[symbol(clReleaseContext)]
     fn release_context(context: Context) -> Status;
+    
+    #[symbol(clReleaseCommandQueue)]
+    fn release_command_queue(command_queue: CommandQueue) -> Status;
     
 }
 
@@ -58,6 +68,10 @@ pub(super) struct DeviceId(usize);
 #[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct Context(usize);
+
+#[derive(Handle)]
+#[derive(Clone, Copy)]
+pub(super) struct CommandQueue(usize);
 
 #[repr(i32)]
 #[derive(Clone, Copy)]
@@ -212,4 +226,37 @@ pub(super) enum DeviceInfoProperty {
     PreferredLocalAtomicAlignment = 0x1045,
     MaxNumSubGroups = 0x1046,
     SubGroupIndependentForwardProgress = 0x1047,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy)]
+#[derive(PartialEq, Eq)]
+#[allow(unused)]
+pub(super) enum QueueProperty {
+    Context = -0x1090,
+    Device = -0x1091,
+    ReferenceCount = -0x1092,
+    Properties = -0x1093,
+    Size = -0x1094,
+    DeviceDefaultOrEnd = 0,
+    Priority = -0x1096,
+    Throttle = -0x1097,
+    NodeMask = -0x1098,
+    ContextOnDevice = -0x109A,
+    PropertiesArray = -0x109B,
+    SizeArray = -0x109C,
+    Count = -0x109D,
+    DeviceQueueCapabilities = -0x109E,
+    MaxSize = -0x109F,
+    MaxDeviceQueueSize = -0x10A0,
+    MaxPipelines = -0x10A1,
+    Pipelined = -0x10A2,
+    DeviceQueueProperties = -0x10A3,
+    CreateFlags = -0x10A4,
+    PropertiesListBeginAmd = 0x40E0,
+    PropertiesListEndAmd = 0x40E1,
+    ThreadHandle = -0x40E2,
+    PropertiesArraySizeAmd = 0x40E3,
+    ThreadHandleKhr = -0x40E4,
+    PropertiesArraySizeKhr = 0x40E5,
 }
