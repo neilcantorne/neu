@@ -3,6 +3,7 @@ mod device;
 mod query_device_iter;
 mod backend_api;
 mod dynamic_library;
+mod handle;
 mod cl;
 
 pub use engine::Engine;
@@ -13,9 +14,7 @@ pub use backend_api::BackendApi;
 use engine::{ CudaEngine, ClEngine };
 use device::{ CudaDevice, ClDevice };
 use dynamic_library::DynamicLibrary;
-
-// Alias *mut std::ffi::c_void for convenience
-type VoidPtr = *mut std::ffi::c_void;
+use handle::Handle;
 
 // Cuda initialization related code
 static IS_CUDA_INIT: bool = false;
