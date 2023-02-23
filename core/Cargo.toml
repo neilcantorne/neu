@@ -9,4 +9,3 @@ edition = "2021"
 bindgen = { path = "../bindgen" }
 cuda-driver-sys = "0.3.0"
 inkwell = { git = "https://github.com/TheDan64/inkwell", branch = "master", features = ["llvm15-0"] }
-cl3 = { version = "0.9.1", features = ["CL_VERSION_3_0"] }
