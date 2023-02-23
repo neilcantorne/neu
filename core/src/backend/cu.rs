@@ -74,6 +74,9 @@ pub(super) enum InitFlag {
 }
 
 #[repr(u32)]
+#[derive(Clone, Copy)]
+#[derive(PartialEq, Eq)]
+#[allow(unused)]
 pub enum CtxSchedFlag {
     Auto = 0,
     Spin = 1,
