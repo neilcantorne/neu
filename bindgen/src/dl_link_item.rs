@@ -32,7 +32,7 @@ impl DlLinkItem {
         let mut load_items = TokenStream::new();
         let mut fn_store = TokenStream::new();
         let mut fn_caller = TokenStream::new();
-        let mut libname = if let Some(name) = &self.libname {
+        let libname = if let Some(name) = &self.libname {
             name.clone()
         } else {
             Literal::string(&name.to_string())
@@ -196,7 +196,7 @@ impl Descriptor {
 
     fn generate_loading(&self, tokens: &mut proc_macro2::TokenStream) {
         let ptr_name = Ident::new(&self.ptr_name, Span::call_site());
-        let mut symbol = Literal::byte_string(self.symbol.as_bytes());
+        let symbol = Literal::byte_string(self.symbol.as_bytes());
         tokens.extend(quote::quote!(
             let #ptr_name = std::mem::transmute(library.get_function(#symbol)?.as_ptr());
         ))
