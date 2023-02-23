@@ -1,6 +1,10 @@
 
-use bindgen::dl_link;
+use bindgen::{
+    dl_link,
+    Handle
+};
 
+use super::Handle;
 
 #[dl_link(OpenCl)]
 #[libname("OpenCL")]
@@ -43,26 +47,17 @@ extern "C" {
 }
 
 
+#[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct PlatformId(usize);
 
-impl PlatformId {
-    pub const NULL: Self = Self(0);
-}
-
+#[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct DeviceId(usize);
 
-impl DeviceId {
-    pub const NULL: Self = Self(0);
-}
-
+#[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct Context(usize);
-
-impl Context {
-    pub const NULL: Self = Self(0);
-}
 
 #[repr(i32)]
 #[derive(Clone, Copy)]

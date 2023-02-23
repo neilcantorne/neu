@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use super::cl;
+use super::Handle;
 
 pub struct QueryDeviceIter {
     cl: cl::OpenCl,
