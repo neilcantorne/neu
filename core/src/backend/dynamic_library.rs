@@ -3,14 +3,25 @@ use std::ptr::NonNull;
 pub(super) struct DynamicLibrary(NonNull<()>);
 
 impl DynamicLibrary {
-    #[cfg(target_family = "unix")]
+    #[cfg(target_os = "macos")]
     pub(super) fn load(filename: &[u8]) -> Option<Self> {
-        Some(Self(NonNull::new(unsafe { dlopen(filename.as_ptr(), 0) })?))
+        let filename = format!("lib{filename}.dylib\0");
+
+        NonNull::new(unsafe { dlopen(filename.as_ptr(), 1) }).map(Self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn load(filename: &str) -> Option<Self> {
+        let filename = format!("lib{filename}.so\0");
+
+        NonNull::new(unsafe { dlopen(filename.as_ptr(), 1) }).map(Self)
     }
 
     #[cfg(target_family = "windows")]
     pub(super) fn load(filename: &[u8]) -> Option<Self> {
-        Some(Self(NonNull::new(unsafe { LoadLibraryA(filename.as_ptr()) })?))
+        let filename = format!("{filename}.dll\0");
+        
+        NonNull::new(unsafe { dlopen(filename.as_ptr(), 1) }).map(Self)
     }
 
     pub(super) fn get_function(&self, symbol: &[u8]) -> Option<NonNull<()>> {
