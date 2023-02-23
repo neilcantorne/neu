@@ -4,6 +4,7 @@ mod query_device_iter;
 mod backend_api;
 mod dynamic_library;
 mod handle;
+mod cu;
 mod cl;
 
 pub use engine::Engine;
@@ -15,16 +16,3 @@ use engine::{ CudaEngine, ClEngine };
 use device::{ CudaDevice, ClDevice };
 use dynamic_library::DynamicLibrary;
 use handle::Handle;
-
-// Cuda initialization related code
-static IS_CUDA_INIT: bool = false;
-
-fn initialize_cuda() -> crate::Result<()>{
-    unsafe {
-        if !IS_CUDA_INIT && cuda_driver_sys::cuInit(0) != cuda_driver_sys::cudaError_enum::CUDA_SUCCESS {
-            return crate::Errors::FailedToInitializeCuda.into();
-        }
-
-        Ok(())
-    }
-}
