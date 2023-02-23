@@ -3,6 +3,7 @@ mod device;
 mod query_device_iter;
 mod backend_api;
 mod dynamic_library;
+mod cl;
 
 pub use engine::Engine;
 pub use device::Device;

@@ -1,19 +1,23 @@
 use std::sync::Arc;
-
+use super::cl;
 
 pub struct QueryDeviceIter {
-    pub(super) cuda_count: i32,
-    pub(super) cuda_index: i32,
-    pub(super) cl_platforms: Option<Vec<super::VoidPtr>>,
-    pub(super) cl_platform_index: usize,
-    pub(super) cl_device_index: usize,
-    pub(super) cl_device_buffer: Option<Vec<super::VoidPtr>>
+    cl: cl::OpenCl,
+    cuda_count: i32,
+    cuda_index: i32,
+    cl_platforms: Option<Vec<cl::PlatformId>>,
+    cl_platform_index: usize,
+    cl_device_index: usize,
+    cl_device_buffer: Option<Vec<cl::DeviceId>>
 }
 
 impl QueryDeviceIter {
     pub(super) fn new(backend: super::BackendApi) -> crate::Result<Self> {
+        let cl= (cl::OpenCl::load()
+            .ok_or(crate::Errors::UnableToLoadOpenCl.into()) as crate::Result::<cl::OpenCl>)?;
+
         let mut cuda_count = 0i32;
-        let mut cl_platforms: Option<Vec::<*mut std::ffi::c_void>> = None;
+        let mut cl_platforms: Option<Vec::<cl::PlatformId>> = None;
         // Query CUDA device
         if matches!(backend, super::BackendApi::All | super::BackendApi::Cuda) {
             super::initialize_cuda()?;
@@ -27,13 +31,13 @@ impl QueryDeviceIter {
 
             unsafe {
                 // Retrieve the number of OpenCL platforms currently available
-                cl3::ext::clGetPlatformIDs(0, std::ptr::null_mut(), &mut cl_platform_count);
+                cl.get_platform_ids(0, std::ptr::null_mut(), &mut cl_platform_count);
 
                 if cl_platform_count > 0 {
                     let mut buffer = Vec::with_capacity(cl_platform_count as _); // allocate buffer
                     
                     // Query platform IDs
-                    cl3::ext::clGetPlatformIDs(cl_platform_count, buffer.as_mut_ptr(), std::ptr::null_mut());
+                    cl.get_platform_ids(cl_platform_count, buffer.as_mut_ptr(), std::ptr::null_mut());
                     
                     buffer.set_len(cl_platform_count as _); // increase length to the platform count
                     cl_platforms = Some(buffer);
@@ -43,6 +47,7 @@ impl QueryDeviceIter {
 
         // Build an iterator
         Ok(Self {
+            cl,
             cuda_count,
             cl_platforms,
             cuda_index: 0,
@@ -89,19 +94,19 @@ impl Iterator for QueryDeviceIter {
 
                 unsafe {
                     // Check the number of device in the current platform
-                    if cl3::ext::clGetDeviceIDs(platforms[self.cl_platform_index], cl3::device::CL_DEVICE_TYPE_ALL, 0, 
-                        std::ptr::null_mut(), &mut device_count) != 0 {
+                    if self.cl.get_device_ids(platforms[self.cl_platform_index], cl::DeviceType::All, 0, 
+                        std::ptr::null_mut(), &mut device_count) != cl::Status::Success {
                         return Some(crate::Errors::FailedToRetrieveOpenClDevices.into());
                     }
                 }
                 
                 if let Some(buffer) = &mut self.cl_device_buffer {
                     // If buffer already exists just resize it
-                    buffer.resize(device_count as _ , std::ptr::null_mut());
+                    buffer.resize(device_count as _ , cl::DeviceId::NULL);
                 } else {
                     // Allocate a buffer if it does not exist yet
-                    let mut buffer = Vec::<super::VoidPtr>::with_capacity(device_count as _);
-                    buffer.resize(device_count as _, std::ptr::null_mut()); // Set default size
+                    let mut buffer = Vec::<cl::DeviceId>::with_capacity(device_count as _);
+                    buffer.resize(device_count as _, cl::DeviceId::NULL); // Set default size
 
                     self.cl_device_buffer = Some(buffer); // Update the device buffer
                 };
@@ -109,8 +114,8 @@ impl Iterator for QueryDeviceIter {
                 if let Some(devices) = &mut self.cl_device_buffer  {
                     unsafe {
                         // Try to retrieve all device in the platform and store it on devices buffer
-                        if cl3::ext::clGetDeviceIDs(platforms[self.cl_platform_index], cl3::device::CL_DEVICE_TYPE_ALL, device_count, 
-                            devices.as_mut_ptr(), std::ptr::null_mut()) != 0 {
+                        if self.cl.get_device_ids(platforms[self.cl_platform_index], cl::DeviceType::All, device_count, 
+                            devices.as_mut_ptr(), std::ptr::null_mut()) != cl::Status::Success {
                             return Some(crate::Errors::FailedToRetrieveOpenClDevices.into());
                         }
                     }
@@ -122,9 +127,10 @@ impl Iterator for QueryDeviceIter {
                 if self.cl_device_index >= devices.len() {
                     self.cl_platform_index += 1;
                 } else {
-                    //otherwise move to the next device and return the current device
+                    // otherwise move to the next device and return the current device
                     let device = super::Device(Arc::new(super::ClDevice {
-                        inner: devices[self.cl_device_index]
+                        id: devices[self.cl_device_index],
+                        cl: self.cl.clone(),
                     }));
 
                     self.cl_device_index += 1;

@@ -3,6 +3,8 @@ use std::{
     ffi::CStr
 };
 
+use super::cl;
+
 /// Represents a CUDA or OpenCL device.
 /// This struct provides a simple way to retrieve information about a device
 /// that can be used for hardware accelerated computation.
@@ -160,7 +162,8 @@ impl DeviceInner for CudaDevice {
 }
 
 pub(super) struct ClDevice {
-    pub(super) inner: super::VoidPtr
+    pub(super) id: cl::DeviceId,
+    pub(super) cl: cl::OpenCl,
 }
 
 impl DeviceInner for ClDevice {
@@ -168,17 +171,18 @@ impl DeviceInner for ClDevice {
         let context;
 
         unsafe {
-            let mut errcode_ret = 0i32;
+            let mut errcode_ret = cl::Status::default();
             
-            context = cl3::ext::clCreateContext(std::ptr::null(), 1, &self.inner, None, std::ptr::null_mut(), &mut errcode_ret);
+            context = self.cl.create_context(std::ptr::null(), 1, &self.id, None, std::ptr::null_mut(), &mut errcode_ret);
 
-            if errcode_ret != cl3::context::CL_SUCCESS {
+            if errcode_ret != cl::Status::Success {
                 return crate::Errors::UnableToCreateOpenClContext.into();
             }
         }
 
         Ok(super::Engine(Arc::new(super::ClEngine {
-            context
+            context,
+            cl: self.cl.clone(),
         })))
     }
 
@@ -192,8 +196,8 @@ impl DeviceInner for ClDevice {
             let mut length = 0usize;
 
             // Query device name length            
-            if cl3::ext::clGetDeviceInfo(self.inner, cl3::device::CL_DEVICE_NAME, 
-                0, std::ptr::null_mut(), &mut length) != 0 {
+            if self.cl.get_device_info(self.id, cl3::device::CL_DEVICE_NAME, 
+                0, std::ptr::null_mut(), &mut length) != cl::Status::Success {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
 
@@ -206,8 +210,8 @@ impl DeviceInner for ClDevice {
             }
 
             // Query device name
-            if cl3::ext::clGetDeviceInfo(self.inner, cl3::device::CL_DEVICE_NAME, 
-                length, buffer as _, std::ptr::null_mut()) != 0 {
+            if self.cl.get_device_info(self.id, cl3::device::CL_DEVICE_NAME, 
+                length, buffer as _, std::ptr::null_mut()) != cl::Status::Success {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
 
@@ -228,7 +232,7 @@ impl DeviceInner for ClDevice {
 impl Drop for ClDevice {
     fn drop(&mut self) {
         unsafe {
-            cl3::ext::clReleaseDevice(self.inner);
+            self.cl.release_device(self.id);
         }
     }
 }

@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use super::cl;
+
 pub struct Engine(pub(super) Arc<dyn EngineInner>);
 
 impl Engine {
@@ -31,7 +33,8 @@ impl Drop for CudaEngine {
 }
 
 pub(super) struct ClEngine {
-    pub(super) context: super::VoidPtr
+    pub(super) context: cl::Context,
+    pub(super) cl: cl::OpenCl,
 }
 
 impl EngineInner for ClEngine {
@@ -41,7 +44,7 @@ impl EngineInner for ClEngine {
 impl Drop for ClEngine {
     fn drop(&mut self) {
         unsafe {
-            cl3::ext::clReleaseContext(self.context);
+            self.cl.release_context(self.context);
         }
     }
 }
