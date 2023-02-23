@@ -170,6 +170,7 @@ pub(super) struct ClDevice {
 impl DeviceInner for ClDevice {
     fn create_engine(&self) -> crate::Result<super::Engine> {
         let context;
+        let queue;
 
         unsafe {
             let mut errcode_ret = cl::Status::default();
@@ -179,10 +180,19 @@ impl DeviceInner for ClDevice {
             if errcode_ret != cl::Status::Success {
                 return crate::Errors::UnableToCreateOpenClContext.into();
             }
+
+            queue = self.cl.create_command_queue_with_properties(context, self.id,
+                    [cl::QueueProperty::Properties,
+                    cl::QueueProperty::DeviceDefaultOrEnd ].as_ptr(), &mut errcode_ret);
+            
+            if errcode_ret != cl::Status::Success {
+                return crate::Errors::UnableToCreateOpenClContext.into();
+            }
         }
 
         Ok(super::Engine(Arc::new(super::ClEngine {
             context,
+            queue,
             cl: self.cl.clone(),
         })))
     }

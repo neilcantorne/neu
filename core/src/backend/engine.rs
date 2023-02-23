@@ -35,6 +35,7 @@ impl Drop for CudaEngine {
 
 pub(super) struct ClEngine {
     pub(super) context: cl::Context,
+    pub(super) queue: cl::CommandQueue,
     pub(super) cl: cl::OpenCl,
 }
 
@@ -45,6 +46,7 @@ impl EngineInner for ClEngine {
 impl Drop for ClEngine {
     fn drop(&mut self) {
         unsafe {
+            self.cl.release_command_queue(self.queue);
             self.cl.release_context(self.context);
         }
     }
