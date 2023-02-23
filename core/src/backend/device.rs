@@ -196,7 +196,7 @@ impl DeviceInner for ClDevice {
             let mut length = 0usize;
 
             // Query device name length            
-            if self.cl.get_device_info(self.id, cl3::device::CL_DEVICE_NAME, 
+            if self.cl.get_device_info(self.id, cl::DeviceInfoProperty::Name, 
                 0, std::ptr::null_mut(), &mut length) != cl::Status::Success {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
@@ -210,7 +210,7 @@ impl DeviceInner for ClDevice {
             }
 
             // Query device name
-            if self.cl.get_device_info(self.id, cl3::device::CL_DEVICE_NAME, 
+            if self.cl.get_device_info(self.id, cl::DeviceInfoProperty::Name, 
                 length, buffer as _, std::ptr::null_mut()) != cl::Status::Success {
                 return crate::Errors::UnableToGetOpenCLDeviceName.into();
             }
