@@ -3,6 +3,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub(crate) enum ErrorVariants {
     UnableToLoadOpenCl,
+    UnableToLoadCuda,
     FailedToInitializeCuda,
     FailedToRetrieveCudaDevice,
     FailedToRetrieveOpenClDevices,
@@ -41,6 +42,7 @@ impl std::fmt::Debug for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self.0 {
             ErrorVariants::UnableToLoadOpenCl => "Unable to load OpenCL",
+            ErrorVariants::UnableToLoadCuda => "Unable to load CUDA",
             ErrorVariants::FailedToInitializeCuda => "Failed to initialize CUDA backend",
             ErrorVariants::FailedToRetrieveCudaDevice => "Failed to retrieve CUDA device",
             ErrorVariants::FailedToRetrieveOpenClDevices => "Failed to retrieve OpenCL devices",

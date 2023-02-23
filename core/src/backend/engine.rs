@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use super::cl;
+use super::{ cl, cu };
 
 pub struct Engine(pub(super) Arc<dyn EngineInner>);
 
@@ -15,7 +15,8 @@ pub(super) trait EngineInner {
 }
 
 pub(super) struct CudaEngine {
-    pub(super) context: cuda_driver_sys::CUcontext,
+    pub(super) context: cu::Context,
+    pub(super) cu: cu::Cuda,
 }
 
 
@@ -27,7 +28,7 @@ impl EngineInner for CudaEngine {
 impl Drop for CudaEngine {
     fn drop(&mut self) {
         unsafe {
-            cuda_driver_sys::cuCtxDestroy_v2(self.context);
+            self.cu.ctx_destroy_v2(self.context);
         }
     }
 }

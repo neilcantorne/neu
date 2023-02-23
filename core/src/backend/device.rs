@@ -3,7 +3,7 @@ use std::{
     ffi::CStr
 };
 
-use super::cl;
+use super::{ cl, cu, handle::Handle };
 
 /// Represents a CUDA or OpenCL device.
 /// This struct provides a simple way to retrieve information about a device
@@ -118,23 +118,24 @@ pub(super) trait DeviceInner {
 }
 
 pub(super) struct CudaDevice {
-    pub(super) inner: cuda_driver_sys::CUdevice
+    pub(super) inner: cu::Device,
+    pub(super) cu: cu::Cuda,
 }
 
 impl DeviceInner for CudaDevice {
     fn create_engine(&self) -> crate::Result<super::Engine> {
-        let mut context = std::ptr::null_mut();
+        let mut context = cu::Context::NULL;
 
         unsafe {
             // Try creating CUDA context with the current device
-            if cuda_driver_sys::cuCtxCreate_v2(&mut context, 
-                    cuda_driver_sys::CUctx_flags_enum::CU_CTX_SCHED_AUTO as _, self.inner) != cuda_driver_sys::cudaError_enum::CUDA_SUCCESS {
+            if self.cu.ctx_create_v2(&mut context, cu::CtxSchedFlag::Auto, self.inner) != cu::Status::Success {
                 return crate::Errors::UnableToCreateCudaContext.into();
             }
         }
 
         Ok(super::Engine(Arc::new(super::CudaEngine {
-            context
+            context,
+            cu: self.cu.clone()
         })))
     }
 
@@ -147,7 +148,7 @@ impl DeviceInner for CudaDevice {
         
         unsafe {
             // Try retrieving name
-            if cuda_driver_sys::cuDeviceGetName(buffer.as_mut_ptr(), 256, self.inner) != cuda_driver_sys::CUresult::CUDA_SUCCESS {
+            if self.cu.device_get_name(buffer.as_mut_ptr(), 256, self.inner) != cu::Status::Success {
                 return crate::Errors::UnableToGetCudaDeviceName.into();
             }
 
