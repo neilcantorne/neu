@@ -57,6 +57,8 @@ extern "C" {
     #[symbol(clCreateProgramWithIL)]
     fn create_program_with_il(context: Context, il: *const u8, size: usize, errcode_ret: *mut Status) -> Program;
     
+    #[symbol(clCreateKernel)]
+    fn create_kernel(program: Program, kernel_name: *const u8, errcode_ret: *mut Status) -> Kernel;
 }
 
 
@@ -79,6 +81,10 @@ pub(super) struct CommandQueue(usize);
 #[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct Program(usize);
+
+#[derive(Handle)]
+#[derive(Clone, Copy)]
+pub(super) struct Kernel(usize);
 
 #[repr(i32)]
 #[derive(Clone, Copy)]
