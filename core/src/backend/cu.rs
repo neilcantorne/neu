@@ -29,6 +29,9 @@ extern "C" {
 
     #[symbol(cuModuleLoadDataEx)]
     fn module_load_data_ex(module: *mut Module, image: *mut u8, num_option: u32, options: *const JitOption) -> Status;
+    
+    #[symbol(cuModuleGetFunction)]
+    fn module_get_function(function: *mut Function, module: Module, name: *const u8) -> Status;
 
 }
 
@@ -43,6 +46,10 @@ pub(super) struct Context(usize);
 #[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct Module(usize);
+
+#[derive(Handle)]
+#[derive(Clone, Copy)]
+pub(super) struct Function(usize);
 
 #[repr(i32)]
 #[derive(Clone, Copy)]
