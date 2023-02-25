@@ -27,6 +27,9 @@ extern "C" {
     #[symbol(cuCtxDestroy_v2)]
     fn ctx_destroy_v2(pctx: Context) -> Status;
 
+    #[symbol(cuModuleLoadDataEx)]
+    fn module_load_data_ex(module: *mut Module, image: *mut u8, num_option: u32, options: *const JitOption) -> Status;
+
 }
 
 #[derive(Handle)]
@@ -37,6 +40,9 @@ pub(super) struct Device(i32);
 #[derive(Clone, Copy)]
 pub(super) struct Context(usize);
 
+#[derive(Handle)]
+#[derive(Clone, Copy)]
+pub(super) struct Module(usize);
 
 #[repr(i32)]
 #[derive(Clone, Copy)]
@@ -82,5 +88,34 @@ pub enum CtxSchedFlag {
     Spin = 1,
     Yield = 2,
     BlockingSync = 4,
+}
+
+
+#[repr(u32)]
+#[derive(Clone, Copy)]
+#[derive(PartialEq, Eq)]
+#[allow(unused)]
+pub enum JitOption {
+    MaxRegisters,
+    ThreadsPerBlock,
+    WallTime,
+    InfoLogBuffer,
+    InfoLogBufferSizeBytes,
+    ErrorLogBuffer,
+    ErrorLogBufferSizeBytes,
+    OptimizationLevel,
+    TargetFromCucontext,
+    Target,
+    FallbackStrategy,
+    GenerateDebugInfo,
+    LogVerbose,
+    GenerateLineInfo,
+    CacheMode,
+    NewSm3xOpt,
+    FastCompile,
+    GlobalSymbolNames,
+    GlobalSymbolAddresses,
+    GlobalSymbolCount,
+    NumOptions,
 }
 
