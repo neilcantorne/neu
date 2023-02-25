@@ -53,6 +53,9 @@ extern "C" {
     
     #[symbol(clReleaseCommandQueue)]
     fn release_command_queue(command_queue: CommandQueue) -> Status;
+
+    #[symbol(clCreateProgramWithIL)]
+    fn create_program_with_il(context: Context, il: *const u8, size: usize, errcode_ret: *mut Status) -> Program;
     
 }
 
@@ -72,6 +75,10 @@ pub(super) struct Context(usize);
 #[derive(Handle)]
 #[derive(Clone, Copy)]
 pub(super) struct CommandQueue(usize);
+
+#[derive(Handle)]
+#[derive(Clone, Copy)]
+pub(super) struct Program(usize);
 
 #[repr(i32)]
 #[derive(Clone, Copy)]
